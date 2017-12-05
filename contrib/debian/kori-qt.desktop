@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Kori Core
+Comment=Connect to the Kori P2P Network
+Comment[de]=Verbinde mit dem Kori peer-to-peer Netzwerk
+Comment[fr]=Kori, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Kori, eşten eşe kriptografik sanal para birimi
+Exec=kori-qt %u
+Terminal=false
+Type=Application
+Icon=kori128
+MimeType=x-scheme-handler/kori;
+Categories=Office;Finance;
+StartupWMClass=Kori-qt

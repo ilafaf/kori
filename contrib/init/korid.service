@@ -1,0 +1,25 @@
+# It is not recommended to modify this file in-place, because it will
+# be overwritten during package upgrades. If you want to add further
+# options or overwrite existing ones then use
+# $ systemctl edit korid.service
+# See "man systemd.service" for details.
+
+# Note that almost all daemon options could be specified in
+# /etc/kori/kori.conf
+
+[Unit]
+Description=Kori daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/korid -daemon -conf=/etc/kori/kori.conf -pid=/run/korid/korid.pid
+# Creates /run/korid owned by kori
+RuntimeDirectory=korid
+User=kori
+Type=forking
+PIDFile=/run/korid/korid.pid
+Restart=on-failure
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

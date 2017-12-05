@@ -1,0 +1,92 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/kori/.kori" ]; then
+	KORID_DEFAULT_DATADIR="/var/lib/kori/.kori"
+else
+	KORID_DEFAULT_DATADIR="/var/lib/korid"
+fi
+
+KORID_CONFIGFILE=${KORID_CONFIGFILE:-/etc/kori/kori.conf}
+KORID_PIDDIR=${KORID_PIDDIR:-/var/run/korid}
+KORID_PIDFILE=${KORID_PIDFILE:-${KORID_PIDDIR}/korid.pid}
+KORID_DATADIR=${KORID_DATADIR:-${KORID_DEFAULT_DATADIR}}
+KORID_USER=${KORID_USER:-${KORI_USER:-kori}}
+KORID_GROUP=${KORID_GROUP:-kori}
+KORID_BIN=${KORID_BIN:-/usr/bin/korid}
+KORID_NICE=${KORID_NICE:-${NICELEVEL:-0}}
+KORID_OPTS="${KORID_OPTS:-${KORI_OPTS}}"
+
+name="Kori Core Daemon"
+description="Kori cryptocurrency P2P network daemon"
+
+command="/usr/bin/korid"
+command_args="-pid=\"${KORID_PIDFILE}\" \
+		-conf=\"${KORID_CONFIGFILE}\" \
+		-datadir=\"${KORID_DATADIR}\" \
+		-daemon \
+		${KORID_OPTS}"
+
+required_files="${KORID_CONFIGFILE}"
+start_stop_daemon_args="-u ${KORID_USER} \
+			-N ${KORID_NICE} -w 2000"
+pidfile="${KORID_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${KORID_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${KORID_USER}:${KORID_GROUP}" \
+	"${KORID_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${KORID_USER}:${KORID_GROUP}" \
+	"${KORID_PIDDIR}"
+
+	checkpath -f \
+	-o ${KORID_USER}:${KORID_GROUP} \
+	-m 0660 \
+	${KORID_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${KORID_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run korid."
+		eerror "The setting must appear in ${KORID_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Kori Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

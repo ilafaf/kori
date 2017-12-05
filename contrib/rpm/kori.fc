@@ -1,0 +1,8 @@
+/usr/bin/kori-cli		--	gen_context(system_u:object_r:kori_exec_t,s0)
+/usr/sbin/korid		--	gen_context(system_u:object_r:kori_exec_t,s0)
+/usr/lib(64)?/kori/korid		--	gen_context(system_u:object_r:kori_exec_t,s0)
+
+/etc/kori(/.*)?		gen_context(system_u:object_r:kori_conf_t,s0)
+/var/lib/kori(/.*)?		gen_context(system_u:object_r:kori_var_lib_t,s0)
+
+(/var)?/run/korid(/.*)?   gen_context(system_u:object_r:kori_var_run_t,s0)

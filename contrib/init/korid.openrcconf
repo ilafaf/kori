@@ -1,0 +1,33 @@
+# /etc/conf.d/korid: config file for /etc/init.d/korid
+
+# Config file location
+#KORID_CONFIGFILE="/etc/kori/kori.conf"
+
+# What directory to write pidfile to?  (created and owned by $KORID_USER)
+#KORID_PIDDIR="/var/run/korid"
+
+# What filename to give the pidfile
+#KORID_PIDFILE="${KORID_PIDDIR}/korid.pid"
+
+# Where to write korid data (be mindful that the blockchain is large)
+#KORID_DATADIR="/var/lib/korid"
+
+# User and group to own korid process
+#KORID_USER="kori"
+#KORID_GROUP="kori"
+
+# Path to korid executable
+#KORID_BIN="/usr/bin/korid"
+
+# Nice value to run korid under
+#KORID_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#KORID_OPTS=""
+
+# The timeout in seconds OpenRC will wait for korid to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+KORID_SIGTERM_TIMEOUT=60

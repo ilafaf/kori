@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  korid The kori core server.
+#
+#
+# chkconfig: 345 80 20
+# description: korid
+# processname: korid
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/korid, see below
+if [ -f /etc/sysconfig/korid ]; then
+        . /etc/sysconfig/korid
+fi
+
+RETVAL=0
+
+prog=korid
+# you can override the lockfile via KORID_LOCKFILE in /etc/sysconfig/korid
+lockfile=${KORID_LOCKFILE-/var/lock/subsys/korid}
+
+# korid defaults to /usr/bin/korid, override with KORID_BIN
+korid=${KORID_BIN-/usr/bin/korid}
+
+# korid opts default to -disablewallet, override with KORID_OPTS
+korid_opts=${KORID_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $korid $korid_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

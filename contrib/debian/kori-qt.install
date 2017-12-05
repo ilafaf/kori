@@ -1,0 +1,6 @@
+usr/local/bin/kori-qt usr/bin
+share/pixmaps/kori32.xpm usr/share/pixmaps
+share/pixmaps/kori16.xpm usr/share/pixmaps
+share/pixmaps/kori128.png usr/share/pixmaps
+debian/kori-qt.desktop usr/share/applications
+debian/kori-qt.protocol usr/share/kde4/services/
